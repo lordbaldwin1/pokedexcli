@@ -10,6 +10,11 @@ import (
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
 
+	cfg := config{
+		nextUrl: "https://pokeapi.co/api/v2/location-area/?offset=0",
+		prevUrl: "",
+	}
+
 	for {
 		fmt.Print("Poxedex > ")
 		scanner.Scan()
@@ -24,7 +29,7 @@ func startRepl() {
 
 		command, exists := commandRegistry[commandName]
 		if exists {
-			command.callback()
+			command.callback(&cfg)
 		} else {
 			fmt.Println("Unknown command")
 		}
@@ -51,23 +56,48 @@ func cleanInput(text string) []string {
 	return res
 }
 
+type config struct {
+	nextUrl string
+	prevUrl string
+}
+
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
+}
+
+type LocationAreaResponse struct {
+	Count    int     `json:"count"`
+	Next     string  `json:"next"`
+	Previous *string `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"results"`
 }
 
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"exit": {
 			name:        "exit",
-			description: "Exit the Pokedex",
+			description: "Exit the Pokedex.",
 			callback:    commandExit,
 		},
 		"help": {
 			name:        "help",
-			description: "Displays a help message",
+			description: "Displays a help message.",
 			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays next 20 areas in the Pokemon world.",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays 20 areas in the Pokemon world.",
+			callback:    commandMapB,
 		},
 	}
 }
