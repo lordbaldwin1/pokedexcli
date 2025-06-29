@@ -1,5 +1,6 @@
 # pokedexcli
 
+![Image of welcome message in terminal ascii art text](images/your-image-name.png)
 This is a small CLI to allow users to explore the world of Pokemon, find which Pokemon can be encountered in an area, catch Pokemon, inspect the stats of Pokemon, and create a Pokedex out of caught Pokemon!
 
 ## Goals
