@@ -8,7 +8,7 @@ The primary goal for this project was to learn the http standard library, JSON p
 
 ## Reflection
 
-After completing this project, I am now comfortable with the http standard library, JSON parsing, concurrency, and caching in Go. Specifically, I understand how to create an http client, create requests, read request bodies into data, and unmarshal []byte data into Go Structs.
+After completing this project, I am now comfortable with the http standard library, JSON parsing, concurrency, and caching in Go. Specifically, I understand how to create an http client, create requests, read request bodies into memory, and unmarshal []byte data into Go Structs.
 
 For caching, I learned how to cache API responses with a map struct, where the key is the URL and the value is a struct holding the creation time and the byte data. This allowed me to cache responses of API requests regardless of the JSON form of the data. When a request would be made, the cache is checked and if the data exists within the cache, that data is returned. This greatly reduces the time to fetch data on repeated calls. If the data is cached, the byte data from the response is stored in the cache. A lifetime was added to the cache and records are reaped after that interval has passed. This checking of the cache runs concurrently with all other CLI behavior.
 

@@ -9,6 +9,26 @@ import (
 	"github.com/lordbaldwin1/pokedexcli/internal/api"
 )
 
+const asciiString = `
+		⢰⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀
+		⠀⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⣾⣿
+		⠀⠘⢿⣿⣿⣿⣿⣦⣀⣀⣀⣄⣀⣀⣠⣀⣤⣶⣿⣿⣿⣿⣿⠇
+		⠀⠀⠈⠻⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀
+		⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⠋⠀⠀⠀
+		⠀⠀⠀⢠⣿⣿⡏⠆⢹⣿⣿⣿⣿⣿⣿⠒⠈⣿⣿⣿⣇⠀⠀⠀
+		⠀⠀⠀⣼⣿⣿⣷⣶⣿⣿⣛⣻⣿⣿⣿⣶⣾⣿⣿⣿⣿⡀⠀⠀
+		⠀⠀⠀⡁⠀⠈⣿⣿⣿⣿⢟⣛⡻⣿⣿⣿⣟⠀⠀⠈⣿⡇⠀⠀
+		⠀⠀⠀⢿⣶⣿⣿⣿⣿⣿⡻⣿⡿⣿⣿⣿⣿⣶⣶⣾⣿⣿⠀⠀
+		⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀
+		⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀
+  ____   ___  _  _______ ____  _______  ______ _     ___ 
+ |  _ \ / _ \| |/ / ____|  _ \| ____\ \/ / ___| |   |_ _|
+ | |_) | | | | ' /|  _| | | | |  _|  \  / |   | |    | | 
+ |  __/| |_| | . \| |___| |_| | |___ /  \ |___| |___ | | 
+ |_|    \___/|_|\_\_____|____/|_____/_/\_\____|_____|___|
+
+`
+
 type config struct {
 	pokeapiClient api.Client
 	nextURL       *string
@@ -19,6 +39,9 @@ type config struct {
 func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 
+	fmt.Print(asciiString)
+	fmt.Println("Type 'help' to see a list of commands")
+	fmt.Println()
 	for {
 		fmt.Print("Poxedex > ")
 		scanner.Scan()

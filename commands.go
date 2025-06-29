@@ -11,6 +11,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
+	usage       string
 	callback    func(*config, *string) error
 }
 
@@ -19,52 +20,62 @@ func getCommands() map[string]cliCommand {
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex.",
+			usage:       "exit",
 			callback:    commandExit,
 		},
 		"help": {
 			name:        "help",
 			description: "Displays a help message.",
+			usage:       "help",
 			callback:    commandHelp,
 		},
 		"map": {
 			name:        "map",
 			description: "Displays next 20 areas in the Pokemon world.",
+			usage:       "map",
 			callback:    commandMap,
 		},
 		"mapb": {
 			name:        "mapb",
-			description: "Displays 20 areas in the Pokemon world.",
+			description: "Displays previous 20 areas in the Pokemon world.",
+			usage:       "mapb",
 			callback:    commandMapB,
 		},
 		"explore": {
 			name:        "explore",
-			description: "Show the Pokemon at a specific location",
+			description: "Show the Pokemon in a specific location",
+			usage:       "explore <area-name>",
 			callback:    commandExplore,
 		},
 		"catch": {
 			name:        "catch",
 			description: "Attempt to catch a Pokemon",
+			usage:       "catch <pokemon_name>",
 			callback:    commandCatch,
 		},
 		"inspect": {
 			name:        "inspect",
 			description: "Inspect a currently caught Pokemon",
+			usage:       "inspect <pokemon_name>",
 			callback:    commandInspect,
 		},
 		"pokedex": {
 			name:        "pokedex",
 			description: "View your Pokedex",
+			usage:       "pokedex, OR pokedex <pokemon_name>",
 			callback:    commandPokedex,
 		},
 	}
 }
 
 func commandHelp(cfg *config, parameter *string) error {
-	fmt.Println("\nWelcome to the Pokedex!\nUsage:")
+	fmt.Print("\nWelcome to the Pokedex!\n\nCommands:\n")
 	fmt.Print("\n")
 
 	for _, command := range getCommands() {
-		fmt.Printf("%s: %s\n", command.name, command.description)
+		fmt.Printf("%s:\n", command.name)
+		fmt.Printf("   %s\n", command.description)
+		fmt.Printf(" - Usage: %s\n", command.usage)
 	}
 	fmt.Println("")
 	return nil
