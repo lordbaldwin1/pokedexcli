@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/lordbaldwin1/pokedexcli/internal/api"
+	"github.com/lordbaldwin1/pokedexcli/internal/cache"
 )
 
-func startRepl() {
-	scanner := bufio.NewScanner(os.Stdin)
+type config struct {
+	pokeapiClient api.Client
+	nextURL       *string
+	prevURL       *string
+}
 
-	cfg := config{
-		nextUrl: "https://pokeapi.co/api/v2/location-area/?offset=0",
-		prevUrl: "",
-	}
+func startRepl(cfg *config, cache *cache.Cache) {
+	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
 		fmt.Print("Poxedex > ")
@@ -29,7 +33,7 @@ func startRepl() {
 
 		command, exists := commandRegistry[commandName]
 		if exists {
-			command.callback(&cfg)
+			command.callback(cfg, cache)
 		} else {
 			fmt.Println("Unknown command")
 		}
@@ -37,44 +41,15 @@ func startRepl() {
 }
 
 func cleanInput(text string) []string {
-	if len(text) == 0 {
-		return []string{}
-	}
-
-	strSlice := strings.Split(strings.ToLower(text), " ")
-
-	var res []string
-
-	for _, str := range strSlice {
-		trimmed := strings.TrimSpace(str)
-
-		if trimmed != "" {
-			res = append(res, trimmed)
-		}
-	}
-
-	return res
-}
-
-type config struct {
-	nextUrl string
-	prevUrl string
+	trimmed := strings.ToLower(text)
+	cleanedText := strings.Fields(trimmed)
+	return cleanedText
 }
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
-}
-
-type LocationAreaResponse struct {
-	Count    int     `json:"count"`
-	Next     string  `json:"next"`
-	Previous *string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
+	callback    func(*config, *cache.Cache) error
 }
 
 func getCommands() map[string]cliCommand {
