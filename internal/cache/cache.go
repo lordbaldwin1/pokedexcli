@@ -6,8 +6,8 @@ import (
 )
 
 type Cache struct {
-	PokeCache map[string]cacheEntry
-	Mutex     *sync.Mutex
+	cache map[string]cacheEntry
+	mutex *sync.Mutex
 }
 
 type cacheEntry struct {
@@ -17,8 +17,8 @@ type cacheEntry struct {
 
 func NewCache(interval time.Duration) *Cache {
 	c := &Cache{
-		PokeCache: make(map[string]cacheEntry),
-		Mutex:     &sync.Mutex{},
+		cache: make(map[string]cacheEntry),
+		mutex: &sync.Mutex{},
 	}
 
 	go c.reapLoop(interval)
@@ -26,22 +26,22 @@ func NewCache(interval time.Duration) *Cache {
 }
 
 func (c *Cache) Add(key string, value []byte) {
-	c.Mutex.Lock()
-	defer c.Mutex.Unlock()
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
-	_, exists := c.PokeCache[key]
+	_, exists := c.cache[key]
 	if exists {
 		return
 	}
 
-	c.PokeCache[key] = cacheEntry{createdAt: time.Now(), val: value}
+	c.cache[key] = cacheEntry{createdAt: time.Now(), val: value}
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
-	c.Mutex.Lock()
-	defer c.Mutex.Unlock()
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
-	data, exists := c.PokeCache[key]
+	data, exists := c.cache[key]
 	if !exists {
 		return []byte{}, false
 	}
@@ -58,10 +58,10 @@ func (c *Cache) reapLoop(interval time.Duration) {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		for key, val := range c.PokeCache {
+		for key, val := range c.cache {
 			age := time.Since(val.createdAt)
 			if age > interval {
-				delete(c.PokeCache, key)
+				delete(c.cache, key)
 			}
 		}
 	}

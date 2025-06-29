@@ -13,6 +13,7 @@ type config struct {
 	pokeapiClient api.Client
 	nextURL       *string
 	prevURL       *string
+	pokedex       map[string]api.Pokemon
 }
 
 func startRepl(cfg *config) {
@@ -27,12 +28,18 @@ func startRepl(cfg *config) {
 			continue
 		}
 		commandName := cleanedLine[0]
+		var commandArg *string
+		if len(cleanedLine) > 1 {
+			commandArg = &cleanedLine[1]
+		} else {
+			commandArg = nil
+		}
 
 		commandRegistry := getCommands()
 
 		command, exists := commandRegistry[commandName]
 		if exists {
-			command.callback(cfg)
+			command.callback(cfg, commandArg)
 		} else {
 			fmt.Println("Unknown command")
 		}

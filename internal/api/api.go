@@ -7,16 +7,6 @@ import (
 	"net/http"
 )
 
-type LocationAreaResponse struct {
-	Count    int     `json:"count"`
-	Next     *string `json:"next"`
-	Previous *string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
-}
-
 func (c *Client) ListLocations(pageURL *string) (LocationAreaResponse, error) {
 	url := baseURL + "/location-area"
 	if pageURL != nil {
@@ -63,4 +53,81 @@ func (c *Client) ListLocations(pageURL *string) (LocationAreaResponse, error) {
 	}
 
 	return cachedLocations, nil
+}
+
+func (c *Client) ExploreLocation(location *string) (ExploreLocationResponse, error) {
+	if location == nil {
+		return ExploreLocationResponse{}, errors.New("error: no location input")
+	}
+
+	url := baseURL + "/location-area/" + *location
+
+	cacheData, ok := c.cache.Get(url)
+	if !ok {
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return ExploreLocationResponse{}, errors.New("error: failed to make request")
+		}
+
+		res, err := c.httpClient.Do(req)
+		if err != nil {
+			return ExploreLocationResponse{}, errors.New("error: failed to execute request")
+		}
+		defer res.Body.Close()
+
+		data, err := io.ReadAll(res.Body)
+		if err != nil {
+			return ExploreLocationResponse{}, errors.New("error: failed to read request body")
+		}
+
+		var locationRes ExploreLocationResponse
+		err = json.Unmarshal(data, &locationRes)
+		if err != nil {
+			return ExploreLocationResponse{}, errors.New("error: failed to decode JSON data into struct")
+		}
+
+		c.cache.Add(url, data)
+
+		return locationRes, nil
+	}
+
+	var cacheRes ExploreLocationResponse
+	err := json.Unmarshal(cacheData, &cacheRes)
+	if err != nil {
+		return ExploreLocationResponse{}, errors.New("error: failed to decode data from cache")
+	}
+
+	return cacheRes, nil
+}
+
+func (c *Client) CatchPokemon(name *string) (Pokemon, error) {
+	if name == nil {
+		return Pokemon{}, errors.New("error: pokemon name not input")
+	}
+
+	url := baseURL + "/pokemon/" + *name
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return Pokemon{}, errors.New("error: failed to create request")
+	}
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return Pokemon{}, errors.New("error: request failed")
+	}
+	defer res.Body.Close()
+
+	data, err := io.ReadAll(res.Body)
+	if err != nil {
+		return Pokemon{}, errors.New("error: failed to parse response body")
+	}
+
+	var pokemon Pokemon
+	err = json.Unmarshal(data, &pokemon)
+	if err != nil {
+		return Pokemon{}, errors.New("error: failed to decode response data")
+	}
+
+	return pokemon, nil
 }
