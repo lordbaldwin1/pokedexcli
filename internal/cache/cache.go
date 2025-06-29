@@ -7,7 +7,7 @@ import (
 
 type Cache struct {
 	PokeCache map[string]cacheEntry
-	Mutex     sync.Mutex
+	Mutex     *sync.Mutex
 }
 
 type cacheEntry struct {
@@ -18,6 +18,7 @@ type cacheEntry struct {
 func NewCache(interval time.Duration) *Cache {
 	c := &Cache{
 		PokeCache: make(map[string]cacheEntry),
+		Mutex:     &sync.Mutex{},
 	}
 
 	go c.reapLoop(interval)

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/lordbaldwin1/pokedexcli/internal/api"
-	"github.com/lordbaldwin1/pokedexcli/internal/cache"
 )
 
 type config struct {
@@ -16,7 +15,7 @@ type config struct {
 	prevURL       *string
 }
 
-func startRepl(cfg *config, cache *cache.Cache) {
+func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -33,7 +32,7 @@ func startRepl(cfg *config, cache *cache.Cache) {
 
 		command, exists := commandRegistry[commandName]
 		if exists {
-			command.callback(cfg, cache)
+			command.callback(cfg)
 		} else {
 			fmt.Println("Unknown command")
 		}
@@ -44,35 +43,4 @@ func cleanInput(text string) []string {
 	trimmed := strings.ToLower(text)
 	cleanedText := strings.Fields(trimmed)
 	return cleanedText
-}
-
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(*config, *cache.Cache) error
-}
-
-func getCommands() map[string]cliCommand {
-	return map[string]cliCommand{
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex.",
-			callback:    commandExit,
-		},
-		"help": {
-			name:        "help",
-			description: "Displays a help message.",
-			callback:    commandHelp,
-		},
-		"map": {
-			name:        "map",
-			description: "Displays next 20 areas in the Pokemon world.",
-			callback:    commandMap,
-		},
-		"mapb": {
-			name:        "mapb",
-			description: "Displays 20 areas in the Pokemon world.",
-			callback:    commandMapB,
-		},
-	}
 }

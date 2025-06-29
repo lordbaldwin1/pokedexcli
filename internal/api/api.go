@@ -5,8 +5,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-
-	"github.com/lordbaldwin1/pokedexcli/internal/cache"
 )
 
 type LocationAreaResponse struct {
@@ -19,13 +17,13 @@ type LocationAreaResponse struct {
 	} `json:"results"`
 }
 
-func (c *Client) ListLocations(pageURL *string, cache *cache.Cache) (LocationAreaResponse, error) {
+func (c *Client) ListLocations(pageURL *string) (LocationAreaResponse, error) {
 	url := baseURL + "/location-area"
 	if pageURL != nil {
 		url = *pageURL
 	}
 
-	cachedData, ok := cache.Get(url)
+	cachedData, ok := c.cache.Get(url)
 	if !ok {
 		// create request
 		req, err := http.NewRequest("GET", url, nil)
@@ -47,7 +45,7 @@ func (c *Client) ListLocations(pageURL *string, cache *cache.Cache) (LocationAre
 		}
 
 		// cache byte data
-		cache.Add(url, data)
+		c.cache.Add(url, data)
 
 		// decode data and unmarshal it into struct
 		var locations LocationAreaResponse
