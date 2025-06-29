@@ -44,8 +44,44 @@ func TestReapLoop(t *testing.T) {
 	const waitTime = baseTime + 5*time.Millisecond
 	cache := NewCache(baseTime)
 	cache.Add("https://example.com", []byte("testdata"))
+	cache.Add("https://example1.com", []byte("testdata"))
+	cache.Add("https://example2.com", []byte("testdata"))
+	cache.Add("https://example3.com", []byte("testdata"))
+	cache.Add("https://example4.com", []byte("testdata"))
+	cache.Add("https://example5.com", []byte("testdata"))
+	cache.Add("https://example6.com", []byte("testdata"))
 
 	_, ok := cache.Get("https://example.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
+	}
+	_, ok = cache.Get("https://example1.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
+	}
+	_, ok = cache.Get("https://example2.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
+	}
+	_, ok = cache.Get("https://example3.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
+	}
+	_, ok = cache.Get("https://example4.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
+	}
+	_, ok = cache.Get("https://example5.com")
+	if !ok {
+		t.Errorf("expected to find key")
+		return
+	}
+	_, ok = cache.Get("https://example6.com")
 	if !ok {
 		t.Errorf("expected to find key")
 		return
@@ -54,6 +90,36 @@ func TestReapLoop(t *testing.T) {
 	time.Sleep(waitTime)
 
 	_, ok = cache.Get("https://example.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
+	_, ok = cache.Get("https://example1.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
+	_, ok = cache.Get("https://example2.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
+	_, ok = cache.Get("https://example3.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
+	_, ok = cache.Get("https://example4.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
+	_, ok = cache.Get("https://example5.com")
+	if ok {
+		t.Errorf("expected to not find key")
+		return
+	}
+	_, ok = cache.Get("https://example6.com")
 	if ok {
 		t.Errorf("expected to not find key")
 		return
